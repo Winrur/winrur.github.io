@@ -41,6 +41,9 @@
 		firebase.database().ref("text").set({
 			text: altText
 		});
+		firebase.database().ref("text").on(snap ({
+			altText = snap.val;
+		})
 		responsiveVoice.speak(altText);
 
 	}
