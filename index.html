@@ -37,7 +37,6 @@
 	});
 
 	function buttonClicked(){
-		altText = document.getElementById("tts").value;
 		firebase.database().ref("text").set({
 			text: altText
 		});
