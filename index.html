@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<script src="responsivevoice.js"></script>
+  	<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
+  	<script>
+  		// Initialize Firebase
+  		var config = {
+    		apiKey: "AIzaSyCFv5AWJ1bxnvPLICPWYeGH2RD2oKuO68M",
+    		authDomain: "voicevr-324d4.firebaseapp.com",
+    		databaseURL: "https://voicevr-324d4.firebaseio.com",
+    		projectId: "voicevr-324d4",
+    		storageBucket: "",
+    		messagingSenderId: "573234449276"
+  		};
+  		firebase.initializeApp(config);
+	</script>
+  </head>
+  <body>
+  		<input id="tts" type="Enter anything here! :)">
+  		<button onClick="buttonClicked()" type="button">Press</button>
+  </body>
+</html>
+
+<script>
+	var ttsButton = document.getElementById("ttsbutton");
+	var altText;
+	var username;
+
+	altspace.getUser()
+	.then(function(user){
+		username = user.displayName;
+		responsiveVoice.speak("Hello " + username, "UK English Male");
+	})
+	.catch(function(error){
+		console.log(error);
+	});
+
+	function buttonClicked(){
+		altText = document.getElementById("tts").value;
+		firebase.database().ref("text").set({
+			text: altText
+		});
+		responsiveVoice.speak(altText);
+
+	}
+
+</script>
