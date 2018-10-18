@@ -24,8 +24,13 @@
 
 <script>
 	var ttsButton = document.getElementById("ttsbutton");
+	var clicked = false;
 	var altText;
 	var username;
+
+	firebase.database().ref("text").set({
+		clicked: clicked
+	});
 
 	altspace.getUser()
 	.then(function(user){
@@ -37,14 +42,19 @@
 	});
 
 	function buttonClicked(){
+		clicked = true;
 		firebase.database().ref("text").set({
-			text: altText
+			clicked: clicked
 		});
-		firebase.database().ref("text").on(snap ({
-			altText = snap.val;
-		})
-		responsiveVoice.speak(altText);
 
+
+	}
+
+	if (clicked == true){
+		firebase.database().ref("text").on("value", snap){
+			responsiveVoice.speak(snap.val, "UK English Male");
+			clicked = false;
+		}
 	}
 
 </script>
