@@ -42,6 +42,7 @@
 	});
 
 	function buttonClicked(){
+		console.log("Button Clicked! :)");
 		clicked = true;
 		firebase.database().ref("text").set({
 			clicked: clicked
