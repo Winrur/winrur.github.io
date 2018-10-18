@@ -49,7 +49,7 @@
 
 
 	}
-
+	 console.log(clicked);
 	if (clicked == true){
 		firebase.database().ref("text").on("value", snap => responsiveVoice.speak(snap.val, "UK English Male"))
 	}
