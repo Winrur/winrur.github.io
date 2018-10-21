@@ -23,7 +23,7 @@
 	altspace.getUser()
 	.then(function(user){
 		username = user.displayName;
-		responsiveVoice.speak("Hello " + username + ". Welcome to the Atlas" "UK English Male");
+		responsiveVoice.speak("Hello " + username + ". Welcome to the Atlas", "UK English Male");
 	})
 	.catch(function(error){
 		console.log(error);
