@@ -16,13 +16,21 @@
   		firebase.initializeApp(config);
 	</script>
   </head>
-  <body>
-  		<input id="tts" type="Enter anything here! :)">
-  		<button onClick="buttonClicked()" type="button">Press</button>
-  </body>
 </html>
 
 <script>
+
+	altspace.getUser()
+	.then(function(user){
+		username = user.displayName;
+		responsiveVoice.speak("Hello " + username + ". Welcome to the Atlas" "UK English Male");
+	})
+	.catch(function(error){
+		console.log(error);
+	});
+	
+</script>
+
 	var clicked = false;
 	var altText;
 	var username;
@@ -31,14 +39,7 @@
 		clicked: clicked
 	});
 
-	altspace.getUser()
-	.then(function(user){
-		username = user.displayName;
-		responsiveVoice.speak("Hello " + username, "UK English Male");
-	})
-	.catch(function(error){
-		console.log(error);
-	});
+
 
 	function buttonClicked(){
 		console.log("Button Clicked! :)");
@@ -52,5 +53,3 @@
 	if (clicked == true){
 		firebase.database().ref("text").on("value", snap => responsiveVoice.speak(snap.val, "UK English Male"))
 	}
-
-</script>
