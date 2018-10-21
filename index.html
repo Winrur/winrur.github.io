@@ -3,6 +3,8 @@
   <head>
   	<script src="responsivevoice.js"></script>
   	<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
+	<script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+	<script src="https://sdk.altvr.com/libs/altspace.js/2.9.0/altspace.min.js"></script>
   	<script>
   		// Initialize Firebase
   		var config = {
@@ -15,10 +17,24 @@
   		};
   		firebase.initializeApp(config);
 	</script>
-  </head>
-</html>
+ 	<script>
 
-<script>
+	AFRAME.registerComponent("clickon", {
+		init: function(){
+			var box = this.el.object3D;
+			console.log("ClickOn");
+			box.addEventListener("cursordown", function(){
+				var request = new XMLHttpRequest();
+				request.open('GET', 'https://api.chucknorris.io/jokes/random', true);
+				request.onload = function () {
+  					var data = JSON.parse(this.response);
+  					responsiveVoice.speak(data.value, "UK English Male");
+  					}
+  				request.send();
+			})
+		}
+	});
+	
 
 	altspace.getUser()
 	.then(function(user){
@@ -28,8 +44,14 @@
 	.catch(function(error){
 		console.log(error);
 	});
-	
+
 </script>
+  </head>
+	<a-scene altspace>
+		<a-entity n-text="text: Tell a joke" position="-2 2.5 0" rotation="0 90 0" scale="0.2 0.2 0.2"></a-entity>
+    	<a-box clickon color="red" position="-2 2 0" scale="0.3 0.3 0.3"></a-box>
+	</a-scene>
+</html>
 
 	var clicked = false;
 	var altText;
