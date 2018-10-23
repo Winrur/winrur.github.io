@@ -5,6 +5,7 @@
   	<script src="https://www.gstatic.com/firebasejs/5.5.4/firebase.js"></script>
 	<script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
 	<script src="https://sdk.altvr.com/libs/altspace.js/2.9.0/altspace.min.js"></script>
+  <script src="https://unpkg.com/aframe-animation-component@^5.1.2/dist/aframe-animation-component.min.js"></script>
   	<script>
   		// Initialize Firebase
   		var config = {
@@ -17,61 +18,94 @@
   		};
   		firebase.initializeApp(config);
 	</script>
- 	<script>
+  <script>
+  AFRAME.registerComponent("mystery-box", {
+    init: function(){
+      var self = this.el;
+      var box = self.object3D;
+      var boxOpen = false;
+      var boxContent = self.childNodes[5];
+      var boxTop = self.childNodes[3];
+      var byeSound = document.getElementById("bye-sound");
+      var randomNumber;
+      function boxSpin(){
+        randomNumber = Math.floor(Math.random() * 6) + 1;
+        firebase.database().ref("box").update({
+          randomNumber: randomNumber
+        });
+        firebase.database().ref("box").once("value").then(function(snap){
+          snap.val().randomNumber = randomNumber;
+        })
+        boxContent.setAttribute("src", "#box-" + randomNumber);
+      }
+      firebase.database().ref("box").update({
+        boxOpen: boxOpen
+      });
+      box.addEventListener("cursordown", function(){
+          if(boxOpen == false){
+            boxOpen = true;
+            var numberInterval =  setInterval(boxSpin, 250);
+            setTimeout(function(){clearInterval(numberInterval); if(randomNumber == 6 || 1 || 2 || 3 || 4 || 5){
+              byeSound.emit("box-empty");
+              setTimeout(function(){boxTop.emit("close-box"); boxContent.setAttribute("visible", false);}, 1000);
+            }}, 3700);
+            setTimeout(function(){boxContent.emit("close-box")}, 5700);
+            setTimeout(function(){boxTop.emit("close-box"); boxTop.components.sound.playSound(); boxOpen = false
+            firebase.database().ref("box").update({
+              boxOpen: boxOpen
+            })}, 9070);
+            firebase.database().ref("box").update({
+              boxOpen: boxOpen
+            });
+            firebase.database().ref("box").once("value").then(function(snap){
+              snap.val().boxOpen = boxOpen;
+            })
+          console.log(boxOpen);
+          boxTop.emit("open-box");
+          boxContent.emit("open-box");
+        }
+      })
+    },
+    tick: function(){
 
-	AFRAME.registerComponent("clickon", {
-		init: function(){
-			var box = this.el.object3D;
-			console.log("ClickOn");
-			box.addEventListener("cursordown", function(){
-				var request = new XMLHttpRequest();
-				request.open('GET', 'https://api.chucknorris.io/jokes/random', true);
-				request.onload = function () {
-  					var data = JSON.parse(this.response);
-  					responsiveVoice.speak(data.value, "UK English Male");
-  					}
-  				request.send();
-			})
-		}
-	});
-	
+    }
+  });
 
-	altspace.getUser()
-	.then(function(user){
-		username = user.displayName;
-		responsiveVoice.speak("Hello " + username + ". Welcome to the Atlas", "UK English Male");
-	})
-	.catch(function(error){
-		console.log(error);
-	});
+  </script>
 
 </script>
   </head>
-	<a-scene altspace>
-		<a-entity n-text="text: Tell a joke" position="-2 2.5 0" rotation="0 90 0" scale="0.2 0.2 0.2"></a-entity>
-    	<a-box clickon color="red" position="-2 2 0" scale="0.3 0.3 0.3"></a-box>
+	<a-scene altspace="vertical-align: middle">
+ 		<a-assets>
+      <img id="box-1" src="images/box/1.jpg"></img>
+      <img id="box-2" src="images/box/2.jpg"></img>
+      <img id="box-3" src="images/box/3.jpg"></img>
+      <img id="box-4" src="images/box/4.jpg"></img>
+      <img id="box-5" src="images/box/5.jpg"></img>
+      <img id="box-6" src="images/box/6.jpg"></img>
+      <img id="box-bottom-img" src="images/box-bottom.png"></img>
+      <img id="lock-img" src="images/lock.png"></img>
+      <audio id="box-open-sound" src="sounds/box-open.mp3"></audio>
+      <audio id="box-spin-sound" src="sounds/box-spin.mp3"></audio>
+      <audio id="box-bye-sound" src="sounds/box-bye.mp3"></audio>
+ 			<a-asset-item id="box-base-obj" src="models/box-base.obj"></a-asset-item>
+ 			<a-asset-item id="box-base-mtl" src="models/box-base.mtl"></a-asset-item>
+ 			<a-asset-item id="box-top-obj" src="models/box-top.obj"></a-asset-item>
+ 			<a-asset-item id="box-top-mtl" src="models/box-top.mtl"></a-asset-item>
+  		</a-assets>
+         <a-box src="#box-bottom-img" position="2.78 1 -4.4" scale="4.64 -0.1 1.4" scale="5 5 5"></a-box>
+         <a-entity id="mystery-box-1" mystery-box>
+         <a-obj-model src="#box-base-obj" mtl="#box-base-mtl" scale="0.0045 0.0045 0.0045" position="2.7 1.7 -4.4"></a-obj-model>
+  			 <a-obj-model src="#box-top-obj" mtl="#box-top-mtl" scale="0.0045 0.025 0.0045" position="2.7 1.7 -4.4" sound="src: #box-open-sound; on: open-box"
+         animation__position="property: position; to: 2.7 4 -4.4; dur: 1200; easing: easeInSine; startEvents: open-box"
+         animation__2="property: position; to: 2.7 1.7 -4.4; dur: 700; easing: easeOutSine; startEvents: close-box">
+
+         <a-entity n-object="res: effects/sparkler"></a-entity>
+         </a-obj-model>
+         <a-plane position="2.7 1.2 -4.4" src="#box-1" sound="src: #box-spin-sound; on: open-box"
+         animation__position="property: position; to: 2.7 2.7 -4.4; dur: 3700; easing: easeInSine; startEvents: open-box"
+         animation__2="property: position; to: 2.7 1.2 -4.4; dur: 5000; easing: easeOutSine; startEvents: close-box"></a-plane>
+         </a-entity>
+         <a-entity sound= "src: #box-bye-sound; on: box-empty" id="bye-sound"></a-sound>
 	</a-scene>
 </html>
-
-	var clicked = false;
-	var altText;
-	var username;
-
-	firebase.database().ref("text").set({
-		clicked: clicked
-	});
-
-
-
-	function buttonClicked(){
-		console.log("Button Clicked! :)");
-		clicked = true;
-		firebase.database().ref("text").set({
-			clicked: clicked
-		});
-	}
-	 console.log(clicked);
-	 console.log("test");
-	if (clicked == true){
-		firebase.database().ref("text").on("value", snap => responsiveVoice.speak(snap.val, "UK English Male"))
-	}
