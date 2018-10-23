@@ -45,7 +45,7 @@
           if(boxOpen == false){
             boxOpen = true;
             var numberInterval =  setInterval(boxSpin, 250);
-            setTimeout(function(){clearInterval(numberInterval); if(randomNumber == 6 || 1 || 2 || 3 || 4 || 5){
+            setTimeout(function(){clearInterval(numberInterval); if(randomNumber == 6){
               byeSound.emit("box-empty");
               setTimeout(function(){boxTop.emit("close-box"); boxContent.setAttribute("visible", false);}, 1000);
             }}, 3700);
