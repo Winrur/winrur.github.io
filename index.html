@@ -55,13 +55,13 @@
     }
     // Get the categories + questions from jservice.io
     var request = new XMLHttpRequest();
-    request.open("GET", "http://jservice.io/api/categories?count=50&offset=" + offset);
+    request.open("GET", "https://artsense.club/api/categories?count=1&offset=" + offset +" &__cpo=aHR0cDovL2pzZXJ2aWNlLmlv");
     request.responseType = "json";
     request.send();
     request.onload = function() {
         randomizeCategory();
         categoryText();
-        request.open("GET", "http://jservice.io/api/clues?category=100");
+        request.open("GET", "https://codelab.host/api/clues?category=100&__cpo=aHR0cDovL2pzZXJ2aWNlLmlv");
         request.send();
         request.onload = function() {
             randomizeQuestion();
