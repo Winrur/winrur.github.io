@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html><head>
+<script src="https://aframe.io/releases/0.7.0/aframe.min.js"></script>
+<script src="https://sdk.altvr.com/libs/altspace.js/2.9.0/altspace.min.js"></script>
+<script src="https://www.gstatic.com/firebasejs/5.5.8/firebase.js"></script>
+<script>
+  // Initialize Firebase
+  var config = {
+    apiKey: "AIzaSyCFv5AWJ1bxnvPLICPWYeGH2RD2oKuO68M",
+    authDomain: "voicevr-324d4.firebaseapp.com",
+    databaseURL: "https://voicevr-324d4.firebaseio.com",
+    projectId: "voicevr-324d4",
+    storageBucket: "voicevr-324d4.appspot.com",
+    messagingSenderId: "573234449276"
+  };
+  firebase.initializeApp(config);
+</script>
+<script>
+    firebase.database().ref("categories").set({})
+    var offset = Math.floor(Math.random() * 1000) + 1;
+    var randomCategory;
+    var randomQuestion;
+    var categories = [];
+    var questions = [];
+    // Pick 3 random categories function
+    function randomizeCategory(){
+        for (i = 0; i < 3; i++){
+            randomCategory = Math.floor(Math.random() * 50);
+            categories[i] = request.response[randomCategory];
+            console.log("CATEGORY " + i + ": " + categories[i].title);
+            firebase.database().ref("categories").update({
+                [i]: categories[i]
+            })
+        }
+    }
+    // Pick 3 random questions function
+    function randomizeQuestion(){
+        for (i = 0; i < 3; i++){
+            randomQuestion = Math.floor(Math.random() * request.response.length);
+            questions[i] = request.response[randomQuestion];
+            firebase.database().ref("categories/" + i).update({
+                question: questions[i]
+            })
+        }
+    }
+    // Set category texts function
+    function categoryText(){
+        var categoryTexts = document.getElementsByClassName("category");
+        var currentCategoryText;
+        for (let i = 0; i < 3; i++){
+            firebase.database().ref("categories/" + i).once("value").then(function(snap){
+                categoryTexts[i].setAttribute("n-text", "text", "<color=#000000>" + snap.val().title);
+            })
+        }
+    }
+    // Get the categories + questions from jservice.io
+    var request = new XMLHttpRequest();
+    request.open("GET", "http://jservice.io/api/categories?count=50&offset=" + offset);
+    request.responseType = "json";
+    request.send();
+    request.onload = function() {
+        randomizeCategory();
+        categoryText();
+        request.open("GET", "http://jservice.io/api/clues?category=100");
+        request.send();
+        request.onload = function() {
+            randomizeQuestion();
+      }
+    }
+</script>
+<script>
+
+// an example custom component, that will change the color when clicked
+AFRAME.registerComponent('color-cycle', {
+    schema: {},
+    init: function(){
+        var self = this;
+        this.el.addEventListener('click', function(){
+            var rgb = [
+                Math.floor(Math.random()*255),
+                Math.floor(Math.random()*255),
+                Math.floor(Math.random()*255)
+            ];
+            self.el.setAttribute('color', 'rgb('+rgb.join(',')+')');
+        });
+    }
+});
+
+</script>
+</head>
+<body>
+
+<!-- set up the scene -->
+<a-scene altspace='vertical-align: middle;'>
+    <a-box position="0 2 0" color="white"></a-box>
+    <a-entity class="category" n-text="text: <color=#000000>Box 2" scale="0.2 0.2" position="2 2 1"></a-entity>
+    <a-box position="2 2 0" color="white"></a-box>
+    <a-entity class="category" n-text="text: <color=#000000>Box 1" scale="0.2 0.2" position="0 2 1"></a-entity>
+    <a-box position="4 2 0" color="white"></a-box>
+    <a-entity class="category" n-text="text: <color=#000000>Box 3" scale="0.2 0.2" position="4 2 1"></a-entity>
+</a-scene>
+
+</body></html>
