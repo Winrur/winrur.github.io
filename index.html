@@ -55,13 +55,13 @@
     }
     // Get the categories + questions from jservice.io
     var request = new XMLHttpRequest();
-    request.open("GET", "https://jservice.io/api/categories?count=50&offset=" + offset);
+    request.open("GET", "http://jservice.io/api/categories?count=50&offset=" + offset);
     request.responseType = "json";
     request.send();
     request.onload = function() {
         randomizeCategory();
         categoryText();
-        request.open("GET", "https://jservice.io/api/clues?category=100");
+        request.open("GET", "http://jservice.io/api/clues?category=100");
         request.send();
         request.onload = function() {
             randomizeQuestion();
